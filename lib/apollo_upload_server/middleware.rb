@@ -19,10 +19,11 @@ module ApolloUploadServer
         return @app.call(env)
       end
 
-      request = ActionDispatch::Request.new(env)
-      params = request.params
+      params = env['rack.request.form_hash']
 
       if params['operations'].present? && params['map'].present?
+        request = ActionDispatch::Request.new(env)
+
         result = GraphQLDataBuilder.new(strict_mode: self.class.strict_mode).call(request.params)
         result&.each do |key, value|
           request.update_param(key, value)
